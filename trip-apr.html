@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trip Apr 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; padding: 16px; max-width: 480px; margin: 0 auto; }
+
+  /* top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin: 20px 0 16px; }
+  .trip-tabs { display: flex; background: #e8e6e0; border-radius: 99px; padding: 3px; gap: 2px; }
+  .trip-tabs button { font-family: inherit; font-size: 13px; font-weight: 600; padding: 6px 16px; border: none; background: transparent; color: #888780; cursor: pointer; border-radius: 99px; transition: all 0.15s; }
+  .trip-tabs button.active { background: #fff; color: #1a1a18; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .lang-btn { display: flex; background: #e8e6e0; border-radius: 99px; padding: 3px; gap: 2px; }
+  .lang-btn button { font-family: inherit; font-size: 13px; font-weight: 600; padding: 6px 14px; border: none; background: transparent; color: #888780; cursor: pointer; border-radius: 99px; transition: all 0.15s; }
+  .lang-btn button.active { background: #1a1a18; color: #fff; }
+
+  .page-header { text-align: center; margin-bottom: 20px; }
+  .page-title { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: #888780; }
+
+  /* destination pages */
+  .dest-page { display: none; }
+  .dest-page.active { display: block; }
+
+  /* TODO page */
+  .todo-hero { text-align: center; padding: 32px 16px 24px; }
+  .todo-hero .flag { font-size: 48px; margin-bottom: 12px; }
+  .todo-hero h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .todo-hero p { font-size: 14px; color: #888780; margin-bottom: 24px; }
+  .todo-card { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+  .todo-card-title { font-size: 13px; font-weight: 600; color: #888780; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .todo-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0eeea; }
+  .todo-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .todo-check { width: 18px; height: 18px; border: 1.5px solid #d0ceca; border-radius: 50%; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .todo-check.done { background: #1a1a18; border-color: #1a1a18; }
+  .todo-check.done::after { content: ''; display: block; width: 5px; height: 9px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translate(-1px, -1px); }
+  .todo-text { font-size: 14px; flex: 1; }
+  .todo-text.done { color: #b0ae a8; text-decoration: line-through; }
+  .add-btn { width: 100%; margin-top: 8px; font-family: inherit; font-size: 13px; color: #888780; background: transparent; border: 1.5px dashed #d0ceca; border-radius: 10px; padding: 10px; cursor: pointer; transition: all 0.15s; }
+  .add-btn:hover { border-color: #888780; color: #1a1a18; }
+
+  /* day cards */
+  .day-card { background: #fff; border-radius: 14px; margin-bottom: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+  .day-header { padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0eeea; }
+  .day-badge { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+  .day-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .day-theme { font-size: 12px; color: #888780; }
+  .timeline { padding: 12px 16px; }
+  .stop { display: flex; gap: 10px; margin-bottom: 10px; }
+  .stop:last-child { margin-bottom: 0; }
+  .stop-time { font-size: 11px; color: #888780; min-width: 56px; padding-top: 3px; text-align: right; flex-shrink: 0; }
+  .dot-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; }
+  .dot-line { width: 1px; background: #e8e6e0; flex: 1; min-height: 14px; margin-top: 4px; }
+  .stop:last-child .dot-line { display: none; }
+  .stop-content { flex: 1; padding-bottom: 2px; }
+  .stop-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .stop-desc { font-size: 12px; color: #888780; margin-bottom: 4px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 99px; margin-right: 4px; }
+  .tag-food    { background: #faeeda; color: #633806; }
+  .tag-temple  { background: #eeedfe; color: #3c3489; }
+  .tag-cafe    { background: #e1f5ee; color: #085041; }
+  .tag-art     { background: #faece7; color: #712b13; }
+  .tag-nature  { background: #eaf3de; color: #27500a; }
+  .tag-travel  { background: #e6f1fb; color: #0c447c; }
+  a { color: inherit; text-decoration: underline; text-decoration-color: rgba(0,0,0,0.2); text-underline-offset: 2px; }
+  a:hover { text-decoration-color: currentColor; }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #1c1c1a; color: #e8e6e0; }
+    .trip-tabs { background: #2c2c2a; }
+    .trip-tabs button.active { background: #3a3a38; color: #e8e6e0; box-shadow: none; }
+    .lang-btn { background: #2c2c2a; }
+    .lang-btn button.active { background: #e8e6e0; color: #1a1a18; }
+    .day-card, .todo-card { background: #2c2c2a; box-shadow: none; }
+    .day-header { border-bottom-color: #3a3a38; }
+    .dot-line { background: #3a3a38; }
+    .day-theme, .stop-time, .stop-desc, .page-subtitle { color: #888780; }
+    .todo-item { border-bottom-color: #3a3a38; }
+    .todo-check { border-color: #555550; }
+    .todo-check.done { background: #e8e6e0; border-color: #e8e6e0; }
+    .todo-check.done::after { border-color: #1a1a18; }
+    .add-btn { border-color: #444441; color: #888780; }
+    .add-btn:hover { border-color: #888780; color: #e8e6e0; }
+    a { text-decoration-color: rgba(255,255,255,0.2); }
+    .tag-food    { background: #412402; color: #fac775; }
+    .tag-temple  { background: #26215c; color: #cecbf6; }
+    .tag-cafe    { background: #04342c; color: #9fe1cb; }
+    .tag-art     { background: #4a1b0c; color: #f5c4b3; }
+    .tag-nature  { background: #173404; color: #c0dd97; }
+    .tag-travel  { background: #042c53; color: #b5d4f4; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar: destination tabs + lang toggle -->
+<div class="topbar">
+  <div class="trip-tabs">
+    <button id="tab-penang" class="active" onclick="setDest('penang')">🇲🇾 Penang</button>
+    <button id="tab-sg" onclick="setDest('sg')">🇸🇬 Singapore</button>
+  </div>
+  <div class="lang-btn">
+    <button id="btn-en" onclick="setLang('en')">EN</button>
+    <button id="btn-th" class="active" onclick="setLang('th')">TH</button>
+  </div>
+</div>
+
+<!-- ===== PENANG PAGE ===== -->
+<div id="page-penang" class="dest-page active">
+  <div class="page-header">
+    <div class="page-title">Penang 🇲🇾</div>
+    <div class="page-subtitle" id="penang-subtitle">April 10–13 · George Town & Beyond</div>
+  </div>
+
+  <!-- Day 1 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-badge" style="background:#faeeda;color:#633806;">10</div>
+      <div>
+        <div class="day-title" data-en="Friday, Apr 10" data-th="ศุกร์ที่ 10 เม.ย.">Friday, Apr 10</div>
+        <div class="day-theme">Heritage & Street Food</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="1:00 PM" data-th="13:00">1:00 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#378add;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Penang+International+Airport" target="_blank" data-en="Arrive at Penang Airport" data-th="ถึงสนามบินปีนัง">Arrive at Penang Airport</a></div>
+          <div class="stop-desc" data-en="Check in at hotel in George Town" data-th="เช็คอินที่พักใน George Town">Check in at hotel in George Town</div>
+          <span class="tag tag-travel" data-en="Transit" data-th="เดินทาง">Transit</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Afternoon" data-th="บ่าย">Afternoon</span>
+        <div class="dot-col"><div class="dot" style="background:#d85a30;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Armenian+Street+George+Town+Penang" target="_blank" data-en="Armenian St. & Chew Jetty" data-th="Armenian St. & Chew Jetty">Armenian St. & Chew Jetty</a></div>
+          <div class="stop-desc" data-en="Street art walk and historic clan jetty" data-th="ชม Street Art และท่าเรือเก่า">Street art walk and historic clan jetty</div>
+          <span class="tag tag-art" data-en="Art" data-th="ศิลปะ">Art</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Afternoon" data-th="บ่าย">Afternoon</span>
+        <div class="dot-col"><div class="dot" style="background:#1d9e75;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Macallum+Connoisseurs+Penang" target="_blank">Macallum Connoisseurs</a></div>
+          <div class="stop-desc" data-en="Café in an old warehouse · great non-coffee menu" data-th="คาเฟ่โกดังเก่า · เมนู Non-Coffee เพียบ">Café in an old warehouse · great non-coffee menu</div>
+          <span class="tag tag-cafe" data-en="Café" data-th="คาเฟ่">Café</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Evening" data-th="เย็น">Evening</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Chulia+Street+Night+Hawkers+Penang" target="_blank" data-en="Chulia Street" data-th="Chulia Street">Chulia Street</a></div>
+          <div class="stop-desc" data-en="CookieCrumbs for cookies + Night Hawkers for dinner" data-th="CookieCrumbs ซื้อคุกกี้ + Night Hawkers มื้อเย็น">CookieCrumbs for cookies + Night Hawkers for dinner</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Night" data-th="ค่ำ">Night</span>
+        <div class="dot-col"><div class="dot" style="background:#d85a30;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Hin+Bus+Depot+Penang" target="_blank" data-en="Hin Bus Depot" data-th="Hin Bus Depot">Hin Bus Depot</a></div>
+          <div class="stop-desc" data-en="Art space in a converted bus depot" data-th="ชมงานศิลปะยามค่ำคืน">Art space in a converted bus depot</div>
+          <span class="tag tag-art" data-en="Art" data-th="ศิลปะ">Art</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 2 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-badge" style="background:#eeedfe;color:#3c3489;">11</div>
+      <div>
+        <div class="day-title" data-en="Saturday, Apr 11" data-th="เสาร์ที่ 11 เม.ย.">Saturday, Apr 11</div>
+        <div class="day-theme">Nature & Night Out</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="Morning" data-th="เช้า">Morning</span>
+        <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=The+Habitat+Penang+Hill" target="_blank" data-en="Penang Hill + The Habitat" data-th="Penang Hill + The Habitat">Penang Hill + The Habitat</a></div>
+          <div class="stop-desc" data-en="Early funicular ride up · treetop walkway" data-th="รถรางขึ้นเขาแต่เช้า · เดินสะพานแขวน">Early funicular ride up · treetop walkway</div>
+          <span class="tag tag-nature" data-en="Nature" data-th="ธรรมชาติ">Nature</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Late morning" data-th="สาย">Late morning</span>
+        <div class="dot-col"><div class="dot" style="background:#7f77dd;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Kek+Lok+Si+Temple+Penang" target="_blank" data-en="Kek Lok Si Temple" data-th="วัด Kek Lok Si">Kek Lok Si Temple</a></div>
+          <div class="stop-desc" data-en="Largest Buddhist temple in Southeast Asia" data-th="วัดเขาเต่า ไหว้เจ้าแม่กวนอิม">Largest Buddhist temple in Southeast Asia</div>
+          <span class="tag tag-temple" data-en="Temple" data-th="วัด">Temple</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Noon" data-th="เที่ยง">Noon</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Air+Itam+Curry+Mee+Penang" target="_blank" data-en="Air Itam Curry Mee" data-th="Air Itam Curry Mee">Air Itam Curry Mee</a></div>
+          <div class="stop-desc" data-en="Famous curry noodles at the base of the hill" data-th="ก๋วยเตี๋ยวแกงชื่อดังแถวตีนเขา">Famous curry noodles at the base of the hill</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Afternoon" data-th="บ่าย">Afternoon</span>
+        <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Entopia+Penang+Butterfly+Farm" target="_blank" data-en="Entopia / Penang National Park" data-th="Entopia / Penang National Park">Entopia / Penang National Park</a></div>
+          <div class="stop-desc" data-en="Butterfly garden or a beach walk up north" data-th="สวนผีเสื้อ หรือเดินเล่นชายหาด">Butterfly garden or a beach walk up north</div>
+          <span class="tag tag-nature" data-en="Nature" data-th="ธรรมชาติ">Nature</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Evening" data-th="เย็น">Evening</span>
+        <div class="dot-col"><div class="dot" style="background:#378add;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Gurney+Drive+Penang" target="_blank" data-en="Gurney Drive" data-th="Gurney Drive">Gurney Drive</a></div>
+          <div class="stop-desc" data-en="Stroll along the seafront promenade" data-th="เดินเล่นริมทะเล พักผ่อน">Stroll along the seafront promenade</div>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="8:00 PM" data-th="20:00">8:00 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Pablo%27s+Restaurant+Penang" target="_blank">Pablo'$</a></div>
+          <div class="stop-desc" data-en="Dinner & chill — Saturday night vibes" data-th="Dinner & Chill · บรรยากาศคืนวันเสาร์">Dinner & chill — Saturday night vibes</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 3 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-badge" style="background:#e1f5ee;color:#085041;">12</div>
+      <div>
+        <div class="day-title" data-en="Sunday, Apr 12" data-th="อาทิตย์ที่ 12 เม.ย.">Sunday, Apr 12</div>
+        <div class="day-theme">Café Hopping & Dinner</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="Morning" data-th="เช้า">Morning</span>
+        <div class="dot-col"><div class="dot" style="background:#378add;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Cheong+Fatt+Tze+Blue+Mansion+Penang" target="_blank" data-en="The Blue Mansion" data-th="The Blue Mansion">The Blue Mansion</a></div>
+          <div class="stop-desc" data-en="Or Pinang Peranakan Mansion" data-th="หรือ Pinang Peranakan Mansion">Or Pinang Peranakan Mansion</div>
+          <span class="tag tag-art" data-en="Photo stop" data-th="ถ่ายรูป">Photo stop</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Noon" data-th="เที่ยง">Noon</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=George+Town+hawker+food+Penang" target="_blank" data-en="Lunch in the Old Quarter" data-th="มื้อเที่ยงย่านเมืองเก่า">Lunch in the Old Quarter</a></div>
+          <div class="stop-desc" data-en="Local hawker food in George Town" data-th="อาหารท้องถิ่นแท้ๆ">Local hawker food in George Town</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Afternoon" data-th="บ่าย">Afternoon</span>
+        <div class="dot-col"><div class="dot" style="background:#1d9e75;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Narrow+Marrow+Cafe+Penang" target="_blank" data-en="Narrow Marrow" data-th="Narrow Marrow">Narrow Marrow</a></div>
+          <div class="stop-desc" data-en="Slow afternoon · fresh fruit sodas" data-th="พักยาวๆ · Sodas ผลไม้สดชื่น">Slow afternoon · fresh fruit sodas</div>
+          <span class="tag tag-cafe" data-en="Café" data-th="คาเฟ่">Café</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="6:30 PM" data-th="18:30">6:30 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Master+Jack+Pot+restaurant+Penang" target="_blank">Master Jack Pot (大街小巷)</a></div>
+          <div class="stop-desc" data-en="Big farewell dinner · buzzing evening atmosphere" data-th="มื้อค่ำจัดเต็มส่งท้าย · บรรยากาศคึกคัก">Big farewell dinner · buzzing evening atmosphere</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 4 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-badge" style="background:#faece7;color:#712b13;">13</div>
+      <div>
+        <div class="day-title" data-en="Monday, Apr 13" data-th="จันทร์ที่ 13 เม.ย.">Monday, Apr 13</div>
+        <div class="day-theme">Dim Sum & Departure</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="6:30 AM" data-th="06:30">6:30 AM</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Fu+Er+Dai+dim+sum+Penang" target="_blank">Fu Er Dai (富二代)</a></div>
+          <div class="stop-desc" data-en="Famous dim sum — go early to beat the queue" data-th="ติ่มซำชื่อดัง ต้องไปแต่เช้าเลี่ยงคิว">Famous dim sum — go early to beat the queue</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Late morning" data-th="สาย">Late morning</span>
+        <div class="dot-col"><div class="dot" style="background:#378add;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Penang+International+Airport" target="_blank" data-en="Penang Airport → Singapore" data-th="สนามบินปีนัง → สิงคโปร์">Penang Airport → Singapore</a></div>
+          <div class="stop-desc" data-en="Fly to Singapore" data-th="บินต่อสิงคโปร์">Fly to Singapore</div>
+          <span class="tag tag-travel" data-en="Transit" data-th="เดินทาง">Transit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SINGAPORE PAGE ===== -->
+<div id="page-sg" class="dest-page">
+  <div class="page-header">
+    <div class="page-title">Singapore 🇸🇬</div>
+    <div class="page-subtitle" id="sg-subtitle">April 13–16 · Changi & Beyond</div>
+  </div>
+
+  <!-- SG Day 1 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-badge" style="background:#e6f1fb;color:#0c447c;">13</div>
+      <div>
+        <div class="day-title" data-en="Sunday, Apr 13" data-th="อาทิตย์ที่ 13 เม.ย.">Sunday, Apr 13</div>
+        <div class="day-theme">Landing, Dim Sum & Marina Night</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="12:40 PM" data-th="12:40">12:40 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#378add;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Jewel+Changi+Airport+Singapore" target="_blank" data-en="Arrive at Changi · Jewel photo stop" data-th="ถึง Changi · ถ่ายรูปที่ Jewel">Arrive at Changi · Jewel photo stop</a></div>
+          <div class="stop-desc" data-en="Giant waterfall at the terminal" data-th="น้ำตกยักษ์กลางสนามบิน">Giant waterfall at the terminal</div>
+          <span class="tag tag-travel" data-en="Transit" data-th="เดินทาง">Transit</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="3:00 PM" data-th="15:00">3:00 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#378add;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name" data-en="Check in — Hotel Mi Rochor" data-th="เช็คอิน — Hotel Mi Rochor">Check in — Hotel Mi Rochor</div>
+          <div class="stop-desc" data-en="Base for the trip" data-th="ที่พักตลอดทริป">Base for the trip</div>
+          <span class="tag tag-travel" data-en="Hotel" data-th="โรงแรม">Hotel</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Afternoon" data-th="บ่าย">Afternoon</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=The+Dim+Sum+Place+North+Bridge+Road+Singapore" target="_blank" data-en="The Dim Sum Place" data-th="The Dim Sum Place">The Dim Sum Place</a></div>
+          <div class="stop-desc" data-en="North Bridge Rd · near hotel, popular & chill" data-th="North Bridge Rd · ใกล้โรงแรม บรรยากาศสบายๆ">North Bridge Rd · near hotel, popular & chill</div>
+          <span class="tag tag-food" data-en="Dim Sum" data-th="ติ่มซำ">Dim Sum</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="5:30 PM" data-th="17:30">5:30 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#7f77dd;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Fountain+of+Wealth+Suntec+City+Singapore" target="_blank" data-en="Fountain of Wealth — Suntec City" data-th="Fountain of Wealth — Suntec City">Fountain of Wealth — Suntec City</a></div>
+          <div class="stop-desc" data-en="Touch-the-fountain session 6:00–7:30 PM" data-th="ช่วงสัมผัสน้ำพุ 18:00–19:30 น.">Touch-the-fountain session 6:00–7:30 PM</div>
+          <span class="tag tag-art" data-en="Attraction" data-th="สถานที่">Attraction</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Dinner" data-th="อาหารเย็น">Dinner</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Putien+restaurant+Marina+Square+Singapore" target="_blank" data-en="Putien or Haidilao" data-th="Putien หรือ Haidilao">Putien or Haidilao</a></div>
+          <div class="stop-desc" data-en="Suntec City / Marina Square — Michelin Chinese or hotpot" data-th="Suntec / Marina Square · มิชลิน หรือหม้อไฟ">Suntec City / Marina Square — Michelin Chinese or hotpot</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Night" data-th="ค่ำ">Night</span>
+        <div class="dot-col"><div class="dot" style="background:#378add;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Singapore+River+Cruise+Merlion+Park" target="_blank" data-en="Singapore River Cruise" data-th="ล่องเรือ Singapore River Cruise">Singapore River Cruise</a></div>
+          <div class="stop-desc" data-en="Board at MBS or Merlion Park · Marina Bay at night" data-th="ขึ้นเรือที่ MBS หรือ Merlion Park · ชมอ่าวยามค่ำคืน">Board at MBS or Merlion Park · Marina Bay at night</div>
+          <span class="tag tag-nature" data-en="Cruise" data-th="ล่องเรือ">Cruise</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SG Day 2 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-badge" style="background:#e1f5ee;color:#085041;">14</div>
+      <div>
+        <div class="day-title" data-en="Monday, Apr 14" data-th="จันทร์ที่ 14 เม.ย.">Monday, Apr 14</div>
+        <div class="day-theme">Sentosa Beach & Marina Bay</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="Morning" data-th="เช้า">Morning</span>
+        <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Sentosa+Boardwalk+Singapore" target="_blank" data-en="Sentosa via Boardwalk" data-th="เดินเข้า Sentosa ทาง Boardwalk">Sentosa via Boardwalk</a></div>
+          <div class="stop-desc" data-en="Chill walk with sea breeze & good views" data-th="เดินชิลรับลม วิวสวย">Chill walk with sea breeze & good views</div>
+          <span class="tag tag-nature" data-en="Nature" data-th="ธรรมชาติ">Nature</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Noon" data-th="เที่ยง">Noon</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Din+Tai+Fung+Resorts+World+Sentosa" target="_blank" data-en="Asian Food Hall or Din Tai Fung" data-th="Asian Food Hall หรือ Din Tai Fung">Asian Food Hall or Din Tai Fung</a></div>
+          <div class="stop-desc" data-en="Resorts World Sentosa" data-th="ใน Resorts World Sentosa">Resorts World Sentosa</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Afternoon" data-th="บ่าย">Afternoon</span>
+        <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Palawan+Beach+Sentosa+Singapore" target="_blank" data-en="Palawan Beach or Siloso Beach" data-th="Palawan Beach หรือ Siloso Beach">Palawan Beach or Siloso Beach</a></div>
+          <div class="stop-desc" data-en="Beach time · Rumours Beach Club or Coastes for drinks" data-th="นอนเล่น · Rumours Beach Club หรือ Coastes จิบเครื่องดื่ม">Beach time · Rumours Beach Club or Coastes for drinks</div>
+          <span class="tag tag-cafe" data-en="Beach" data-th="ชายหาด">Beach</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Dinner" data-th="อาหารเย็น">Dinner</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Rasapura+Masters+Marina+Bay+Sands" target="_blank" data-en="Rasapura Masters (MBS)" data-th="Rasapura Masters (MBS)">Rasapura Masters (MBS)</a></div>
+          <div class="stop-desc" data-en="Food court under MBS · or Le Noir for riverside dining" data-th="ฟู้ดคอร์ทใต้ MBS · หรือ Le Noir บรรยากาศริมน้ำ">Food court under MBS · or Le Noir for riverside dining</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="8:00 PM" data-th="20:00">8:00 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#7f77dd;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Spectra+light+show+Marina+Bay+Sands" target="_blank" data-en="Spectra Light Show" data-th="โชว์น้ำพุ Spectra">Spectra Light Show</a></div>
+          <div class="stop-desc" data-en="Free outdoor show in front of MBS" data-th="โชว์ฟรีด้านหน้า MBS">Free outdoor show in front of MBS</div>
+          <span class="tag tag-art" data-en="Show" data-th="โชว์">Show</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SG Day 3 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-badge" style="background:#eaf3de;color:#27500a;">15</div>
+      <div>
+        <div class="day-title" data-en="Tuesday, Apr 15" data-th="อังคารที่ 15 เม.ย.">Tuesday, Apr 15</div>
+        <div class="day-theme">Jurassic World & Bay East Cycling</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="10:00 AM" data-th="10:00">10:00 AM</span>
+        <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Flower+Dome+Gardens+by+the+Bay+Singapore" target="_blank" data-en="Gardens by the Bay — Flower Dome" data-th="Gardens by the Bay — Flower Dome">Gardens by the Bay — Flower Dome</a></div>
+          <div class="stop-desc" data-en="Sakura Festival in bloom" data-th="เทศกาลซากุระ">Sakura Festival in bloom</div>
+          <span class="tag tag-nature" data-en="Nature" data-th="ธรรมชาติ">Nature</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Noon" data-th="เที่ยง">Noon</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Jurassic+Nest+Food+Hall+Gardens+by+the+Bay" target="_blank" data-en="Jurassic Nest Food Hall" data-th="Jurassic Nest Food Hall">Jurassic Nest Food Hall</a></div>
+          <div class="stop-desc" data-en="Dinosaur-themed food court · Hawker Chan (Michelin)" data-th="ฟู้ดคอร์ทธีมไดโนเสาร์ · Hawker Chan มิชลิน">Dinosaur-themed food court · Hawker Chan (Michelin)</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="2:00 PM" data-th="14:00">2:00 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#7f77dd;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Cloud+Forest+Gardens+by+the+Bay+Singapore" target="_blank" data-en="Cloud Forest — Jurassic World Experience" data-th="Cloud Forest — Jurassic World Experience">Cloud Forest — Jurassic World Experience</a></div>
+          <div class="stop-desc" data-en="Open until 9 PM · enter before 8 PM" data-th="เปิดถึง 21:00 น. เข้าก่อน 20:00 น.">Open until 9 PM · enter before 8 PM</div>
+          <span class="tag tag-art" data-en="Attraction" data-th="สถานที่">Attraction</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="4:00 PM" data-th="16:00">4:00 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Bay+East+Garden+Singapore" target="_blank" data-en="Bay East Garden — cycling" data-th="Bay East Garden — ปั่นจักรยาน">Bay East Garden — cycling</a></div>
+          <div class="stop-desc" data-en="Cross Marina Barrage · best skyline views in SG" data-th="ข้ามสันเขื่อน Marina Barrage · วิวเมืองสวยที่สุด">Cross Marina Barrage · best skyline views in SG</div>
+          <span class="tag tag-nature" data-en="Activity" data-th="กิจกรรม">Activity</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Snack" data-th="พักดื่ม">Snack</span>
+        <div class="dot-col"><div class="dot" style="background:#1d9e75;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Starbucks+Active+Garden+Singapore" target="_blank" data-en="Starbucks @ Active Garden" data-th="Starbucks @ Active Garden">Starbucks @ Active Garden</a></div>
+          <div class="stop-desc" data-en="Shaded & scenic Starbucks before the Barrage" data-th="สาขาที่สวยและร่มรื่น ก่อนข้ามไป Barrage">Shaded & scenic Starbucks before the Barrage</div>
+          <span class="tag tag-cafe" data-en="Café" data-th="คาเฟ่">Café</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="7:00 PM" data-th="19:00">7:00 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Satay+by+the+Bay+Gardens+by+the+Bay+Singapore" target="_blank" data-en="Satay by the Bay" data-th="Satay by the Bay">Satay by the Bay</a></div>
+          <div class="stop-desc" data-en="Open-air satay & local food by the water" data-th="สะเต๊ะและอาหารท้องถิ่น กึ่ง Open-air ริมน้ำ">Open-air satay & local food by the water</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="7:45 PM" data-th="19:45">7:45 PM</span>
+        <div class="dot-col"><div class="dot" style="background:#7f77dd;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Supertree+Grove+Gardens+by+the+Bay+Singapore" target="_blank" data-en="Garden Rhapsody — Supertree Grove" data-th="Garden Rhapsody — Supertree Grove">Garden Rhapsody — Supertree Grove</a></div>
+          <div class="stop-desc" data-en="Lie back and watch the light show" data-th="นอนดูโชว์ไฟที่ Supertree Grove">Lie back and watch the light show</div>
+          <span class="tag tag-art" data-en="Show" data-th="โชว์">Show</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SG Day 4 -->
+  <div class="day-card">
+    <div class="day-header">
+      <div class="day-badge" style="background:#faece7;color:#712b13;">16</div>
+      <div>
+        <div class="day-title" data-en="Wednesday, Apr 16" data-th="พุธที่ 16 เม.ย.">Wednesday, Apr 16</div>
+        <div class="day-theme">Little India & Departure</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="Morning" data-th="เช้า">Morning</span>
+        <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Little+India+Singapore" target="_blank" data-en="Little India stroll" data-th="เดินเล่นย่าน Little India">Little India stroll</a></div>
+          <div class="stop-desc" data-en="Near hotel · colorful streets & morning market" data-th="ใกล้โรงแรม · ย่านสีสันและตลาดเช้า">Near hotel · colorful streets & morning market</div>
+          <span class="tag tag-art" data-en="Explore" data-th="เดินเล่น">Explore</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Coffee" data-th="กาแฟ">Coffee</span>
+        <div class="dot-col"><div class="dot" style="background:#1d9e75;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Old+Hen+Coffee+Bar+Singapore" target="_blank" data-en="Old Hen Coffee Bar" data-th="Old Hen Coffee Bar">Old Hen Coffee Bar</a></div>
+          <div class="stop-desc" data-en="Stylish café · excellent coffee · or Gather the Misfits" data-th="คาเฟ่สุดชิค กาแฟดีมาก · หรือ Gather the Misfits">Stylish café · excellent coffee · or Gather the Misfits</div>
+          <span class="tag tag-cafe" data-en="Café" data-th="คาเฟ่">Café</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="10:00 AM" data-th="10:00">10:00 AM</span>
+        <div class="dot-col"><div class="dot" style="background:#d85a30;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name" data-en="✈ Early flight group → Airport" data-th="✈ กลุ่มเที่ยง → สนามบิน">✈ Early flight group → Airport</div>
+          <div class="stop-desc" data-en="Arrive Changi by 10:00–10:30 AM" data-th="ถึงสนามบินก่อน 10:00–10:30 น.">Arrive Changi by 10:00–10:30 AM</div>
+          <span class="tag tag-travel" data-en="Depart" data-th="กลับบ้าน">Depart</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Late AM" data-th="สาย">Late AM</span>
+        <div class="dot-col"><div class="dot" style="background:#d85a30;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Haji+Lane+Singapore" target="_blank" data-en="✈ Evening flight group → Haji Lane" data-th="✈ กลุ่มเย็น → Haji Lane">✈ Evening flight group → Haji Lane</a></div>
+          <div class="stop-desc" data-en="Street art alley · not far from hotel" data-th="ย่านสตรีทอาร์ท · ไม่ไกลจากที่พัก">Street art alley · not far from hotel</div>
+          <span class="tag tag-art" data-en="Art" data-th="ศิลปะ">Art</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Lunch" data-th="เที่ยง">Lunch</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Zam+Zam+restaurant+Singapore" target="_blank" data-en="Zam Zam — legendary murtabak" data-th="Zam Zam — มะตะบะระดับตำนาน">Zam Zam — legendary murtabak</a></div>
+          <div class="stop-desc" data-en="Or Sum Dim Sum at Jalan Besar for one last round" data-th="หรือ Sum Dim Sum (Jalan Besar) ติ่มซำรอบสุดท้าย">Or Sum Dim Sum at Jalan Besar for one last round</div>
+          <span class="tag tag-food" data-en="Food" data-th="อาหาร">Food</span>
+        </div>
+      </div>
+      <div class="stop">
+        <span class="stop-time" data-en="Afternoon" data-th="บ่าย">Afternoon</span>
+        <div class="dot-col"><div class="dot" style="background:#378add;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Jewel+Changi+Airport+Singapore" target="_blank" data-en="Jewel Changi — last wander before flight" data-th="Jewel Changi — เดินเล่นก่อนกลับ">Jewel Changi — last wander before flight</a></div>
+          <div class="stop-desc" data-en="Shopping & rain vortex one more time" data-th="เดินช็อปปิ้งและดูน้ำตกอีกรอบ">Shopping & rain vortex one more time</div>
+          <span class="tag tag-travel" data-en="Depart" data-th="กลับบ้าน">Depart</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentLang = 'th';
+window.onload = function() { setLang('th'); };
+
+function setDest(dest) {
+  document.getElementById('page-penang').classList.toggle('active', dest === 'penang');
+  document.getElementById('page-sg').classList.toggle('active', dest === 'sg');
+  document.getElementById('tab-penang').classList.toggle('active', dest === 'penang');
+  document.getElementById('tab-sg').classList.toggle('active', dest === 'sg');
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-en]').forEach(function(el) {
+    el.textContent = el.dataset[lang];
+  });
+  document.getElementById('penang-subtitle').textContent =
+    lang === 'th' ? '10–13 เมษายน · George Town & Beyond' : 'April 10–13 · George Town & Beyond';
+  document.getElementById('sg-subtitle').textContent =
+    lang === 'th' ? '13–16 เมษายน · Changi & Beyond' : 'April 13–16 · Changi & Beyond';
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-th').classList.toggle('active', lang === 'th');
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  var txt = el.nextElementSibling;
+  txt.classList.toggle('done');
+}
+
+function addTodo(listId) {
+  var label = currentLang === 'th' ? 'รายการใหม่...' : 'New item...';
+  var item = document.createElement('div');
+  item.className = 'todo-item';
+  item.innerHTML = '<div class="todo-check" onclick="toggleCheck(this)"></div><span class="todo-text" contenteditable="true" style="outline:none;border-bottom:1px solid #d0ceca;">' + label + '</span>';
+  var list = document.getElementById(listId);
+  list.appendChild(item);
+  var span = item.querySelector('.todo-text');
+  span.focus();
+  var range = document.createRange();
+  range.selectNodeContents(span);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+}
+</script>
+</body>
+</html>
