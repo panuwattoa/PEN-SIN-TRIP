@@ -60,7 +60,11 @@
   .stop:last-child .dot-line { display: none; }
   .stop-content { flex: 1; padding-bottom: 2px; }
   .stop-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
-  .copy-btn { flex-shrink: 0; background: none; border: none; cursor: pointer; padding: 1px 3px; color: #c0beb8; line-height: 1; border-radius: 4px; transition: color 0.15s; }
+  .noted { display: flex; align-items: center; gap: 8px; background: #faeeda; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: #633806; }
+  .noted svg { flex-shrink: 0; }
+  @media (prefers-color-scheme: dark) { .noted { background: #412402; color: #fac775; } }
+  .copy-btn { flex-shrink: 0; background: none; border: none; outline: none; -webkit-appearance: none; appearance: none; cursor: pointer; padding: 1px 3px; color: #c0beb8; line-height: 1; border-radius: 4px; transition: color 0.15s; }
+  .copy-btn:focus { outline: none; box-shadow: none; }
   .copy-btn:hover { color: #888780; }
   .copy-btn.copied { color: #1d9e75; }
   .day-card.today { box-shadow: 0 0 0 2px #1a1a18; }
@@ -121,6 +125,11 @@
 </style>
 </head>
 <body>
+
+<div class="noted" id="noted-bar">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="7"/><line x1="8" y1="5" x2="8" y2="8"/><circle cx="8" cy="11" r="0.5" fill="currentColor"/></svg>
+  <span id="noted-text">แผนนี้เปลี่ยนได้ตลอดเวลา ยืดหยุ่นไว้ก่อนนะ 😄</span>
+</div>
 
 <!-- Top bar: destination tabs + lang toggle -->
 <div class="topbar">
@@ -359,7 +368,7 @@
       <div class="day-badge" style="background:#e6f1fb;color:#0c447c;">13</div>
       <div>
         <div class="day-title" data-en="Sunday, Apr 13" data-th="อาทิตย์ที่ 13 เม.ย.">Sunday, Apr 13</div>
-        <div class="day-theme">Landing, Swee Choon & Marina Night</div>
+        <div class="day-theme">Landing & ชมเมืองชิลๆ & Marina Night</div>
       </div>
     </div>
     <div class="timeline">
@@ -382,12 +391,12 @@
         </div>
       </div>
       <div class="stop">
-        <span class="stop-time" data-en="4:00 PM" data-th="16:00">4:00 PM</span>
-        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <span class="stop-time" data-en="Afternoon" data-th="บ่าย">Afternoon</span>
+        <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
         <div class="stop-content">
-          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Swee+Choon+Tim+Sum+183+Jalan+Besar+Singapore" target="_blank" data-en="Swee Choon Tim Sum" data-th="Swee Choon Tim Sum">Swee Choon Tim Sum</a></div>
-          <div class="stop-desc" data-en="Jalan Besar · walkable from hotel · open almost 24hrs" data-th="Jalan Besar · เดินจากโรงแรมได้ · เปิดเกือบ 24 ชม.">Jalan Besar · walkable from hotel · open almost 24hrs</div>
-          <span class="tag tag-food" data-en="Dim Sum" data-th="ติ่มซำ">Dim Sum</span>
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Kampong+Glam+Singapore" target="_blank" data-en="Explore the neighborhood" data-th="เดินทางชมเมืองชิลๆ">เดินทางชมเมืองชิลๆ</a></div>
+          <div class="stop-desc" data-en="Stroll around Kampong Glam · Haji Lane · Arab Street" data-th="แวะ Kampong Glam · Haji Lane · Arab Street ใกล้ที่พัก">Stroll around Kampong Glam · Haji Lane · Arab Street</div>
+          <span class="tag tag-art" data-en="Explore" data-th="เดินเล่น">เดินเล่น</span>
         </div>
       </div>
       <div class="stop">
@@ -417,10 +426,19 @@
       <div class="day-badge" style="background:#e1f5ee;color:#085041;">14</div>
       <div>
         <div class="day-title" data-en="Monday, Apr 14" data-th="จันทร์ที่ 14 เม.ย.">Monday, Apr 14</div>
-        <div class="day-theme">Sentosa & Cheesecake at Queic</div>
+        <div class="day-theme">Swee Choon, Sentosa & Cheesecake</div>
       </div>
     </div>
     <div class="timeline">
+      <div class="stop">
+        <span class="stop-time" data-en="Morning" data-th="เช้า">Morning</span>
+        <div class="dot-col"><div class="dot" style="background:#ba7517;"></div><div class="dot-line"></div></div>
+        <div class="stop-content">
+          <div class="stop-name"><a href="https://www.google.com/maps/search/?api=1&query=Swee+Choon+Tim+Sum+183+Jalan+Besar+Singapore" target="_blank" data-en="Swee Choon Tim Sum" data-th="Swee Choon Tim Sum">Swee Choon Tim Sum</a></div>
+          <div class="stop-desc" data-en="Jalan Besar · walkable from hotel · open almost 24hrs" data-th="Jalan Besar · เดินจากโรงแรมได้ · เปิดเกือบ 24 ชม.">Jalan Besar · walkable from hotel · open almost 24hrs</div>
+          <span class="tag tag-food" data-en="Dim Sum" data-th="ติ่มซำ">Dim Sum</span>
+        </div>
+      </div>
       <div class="stop">
         <span class="stop-time" data-en="Late morning" data-th="สาย">Late morning</span>
         <div class="dot-col"><div class="dot" style="background:#639922;"></div><div class="dot-line"></div></div>
@@ -609,6 +627,8 @@ function highlightToday() {
   var todayLabel = currentLang === 'th' ? 'วันนี้' : 'Today';
   var upcomingLabel = currentLang === 'th' ? 'เร็วๆ นี้' : 'Upcoming';
 
+  // collect all cards with their date info
+  var cards = [];
   document.querySelectorAll('.day-card').forEach(function(card) {
     var badge = card.querySelector('.day-badge');
     if (!badge) return;
@@ -616,26 +636,40 @@ function highlightToday() {
     var titleEl = card.querySelector('.day-title');
     var enTitle = titleEl ? (titleEl.dataset.en || '') : '';
     var cardMonth = enTitle.indexOf('Apr') !== -1 ? 4 : 0;
+    cards.push({ card: card, titleEl: titleEl, d: d, m: cardMonth });
+  });
 
-    card.classList.remove('today', 'upcoming');
-    var existing = card.querySelector('.today-badge, .upcoming-badge');
+  // find the single next upcoming card (smallest future date)
+  var nextCard = null;
+  cards.forEach(function(c) {
+    if (c.m === 0) return;
+    var isFuture = c.m > month || (c.m === month && c.d > day);
+    if (!isFuture) return;
+    if (!nextCard || c.m < nextCard.m || (c.m === nextCard.m && c.d < nextCard.d)) {
+      nextCard = c;
+    }
+  });
+
+  cards.forEach(function(c) {
+    c.card.classList.remove('today', 'upcoming');
+    var existing = c.card.querySelector('.today-badge, .upcoming-badge');
     if (existing) existing.remove();
 
-    var isToday = (cardMonth === month && d === day);
-    var isUpcoming = (cardMonth > month || (cardMonth === month && d > day));
+    var isToday = (c.m === month && c.d === day);
+    var isNext = nextCard && c.card === nextCard.card;
 
     if (isToday) {
-      card.classList.add('today');
+      c.card.classList.add('today');
       var span = document.createElement('span');
       span.className = 'today-badge';
       span.textContent = todayLabel;
-      titleEl.appendChild(span);
-    } else if (isUpcoming) {
-      card.classList.add('upcoming');
+      c.titleEl.appendChild(span);
+    } else if (isNext) {
+      c.card.classList.add('upcoming');
       var span = document.createElement('span');
       span.className = 'upcoming-badge';
       span.textContent = upcomingLabel;
-      titleEl.appendChild(span);
+      c.titleEl.appendChild(span);
     }
   });
 }
@@ -695,6 +729,9 @@ function setLang(lang) {
     lang === 'th' ? '10–13 เมษายน · George Town & Beyond' : 'April 10–13 · George Town & Beyond';
   document.getElementById('sg-subtitle').textContent =
     lang === 'th' ? '13–16 เมษายน · Changi & Beyond' : 'April 13–16 · Changi & Beyond';
+  document.getElementById('noted-text').textContent = lang === 'th'
+    ? 'แผนนี้เปลี่ยนได้ตลอดเวลา ยืดหยุ่นไว้ก่อนนะ 😄'
+    : 'Plans may change anytime — stay flexible! 😄';
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   document.getElementById('btn-th').classList.toggle('active', lang === 'th');
   highlightToday();
